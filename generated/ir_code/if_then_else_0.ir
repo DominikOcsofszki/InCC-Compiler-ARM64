@@ -1,0 +1,10 @@
+label ite_0
+loadc 1
+loadc 2
+le
+jumpz ite_else_0
+loadc 111
+jump ite_end_0
+label ite_else_0
+loadc 222
+label ite_end_0

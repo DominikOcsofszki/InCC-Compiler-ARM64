@@ -1,0 +1,49 @@
+
+def to_arm64(cma_code, env) :
+    code = ""
+
+    for line in cma_code.splitlines() :
+        match re.split("[,\\s]+",line) :
+            case ['pop'] :
+                code +=  'pop   rax\n'
+            case ['loadc', q] :
+                code += f'push  qword {str(q)}\n'
+            case ['add'] :
+                code += 'pop  rcx\n'
+                code += 'pop  rax\n'
+                code += 'add  rax, rcx\n'
+                code += 'push rax\n'
+            case [*unknown] :
+                code += f'Error: unknown CMa statement {unknown}'
+
+    # return format_code(code)
+    return code
+
+def arm_start(env,program):
+    program += "    .global main\n"
+    program += "    .align	4\n"
+    program += "\n"
+    program += "main:\n"
+    return program
+
+def arm_exit(env,program):
+    program += "\n"
+    program += "    mov x0, #0\n"
+    program += "    mov x16, #1\n"
+    program += "    svc 0\n"
+    return program
+
+
+def arm_program(x86_code, env) :
+    program=""
+    program = arm_start(env,program)
+    program = arm_read_var(env,program)
+    # program += "\n;;; Start des eigentlichen Programms\n"
+    # program += x86_code
+    # program += ";;; Ende des eigentlichen Programms\n\n"
+    # program = arm_exit(env,program)
+    return program
+    # return format_code(program)
+prog = arm_program("","")
+print(prog)
+

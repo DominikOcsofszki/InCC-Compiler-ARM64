@@ -1,0 +1,17 @@
+loadc 0
+loadc 16
+store
+pop
+label while_start_0
+loada 16
+loadc 10
+leq
+jumpz while_end_0
+loada 16
+loadc 1
+add
+loadc 16
+store
+pop
+jump while_start_0
+label while_end_0

@@ -1,0 +1,7 @@
+loadc 1
+loadc 16
+store
+pop
+loadc 2
+loadc 32
+store

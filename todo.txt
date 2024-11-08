@@ -1,0 +1,17 @@
+empty lines should not be allowed!!!
+
+or 1;2;3
+
+proceduren:
+label_x:
+	adrp x0, label_x@GOTPAGE 
+	ldr     x0, [x0, label_x@GOTPAGEOFF]
+
+
+proc geht nur globale variablen und locale
+
+kein Zuggriff auf variable die nicht global existiert und nicht im function kopf erstellt wurden.
+Es darf dürfen aber globale variablen erzeugt werden
+
+
+make_unqiue_laber for multiple labels! if exist before or sth

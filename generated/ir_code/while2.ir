@@ -1,0 +1,18 @@
+loadc 111
+loadc 0
+store
+pop
+label while_start_0
+loadc 0
+load
+loadc 780
+le
+jumpz while_end_0
+loadc 0
+load
+loadc 11
+add
+loadc 0
+store
+jump while_start_0
+label while_end_0

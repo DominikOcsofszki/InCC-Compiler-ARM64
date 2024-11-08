@@ -1,0 +1,27 @@
+#!/Users/dominik/HOME/DEV/Compiler/incc24/dom/arm/.venv/bin/python
+
+import argparse
+from compiler import compileFileFromCodeFolderBaseName
+from configs import Configs
+
+def getFileFromInputArgs():
+    argparser = argparse.ArgumentParser(prog='InCC-Compiler', description='cli')
+    argparser.add_argument('-f',metavar="FILE_BASE_NAME", type=str, help='Input file name',required=True)
+    args = argparser.parse_args()
+    FILE_NAME = args.f
+    return FILE_NAME
+
+
+
+def run():
+    FILE_NAME= getFileFromInputArgs()
+    if '.' in FILE_NAME:
+        print("add: -f 'filename'")
+        print("exit()")
+        exit()
+    compileFileFromCodeFolderBaseName(FILE_NAME, Configs.ENV.value)
+
+
+if __name__ =="__main__":
+    run()
+

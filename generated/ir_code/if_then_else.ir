@@ -1,0 +1,22 @@
+loadc 111
+loadc 16
+store
+pop
+loadc 222
+loadc 32
+store
+pop
+label ite_0
+loadc 16
+load
+loadc 32
+load
+gr
+jumpz ite_else_0
+loadc 333
+loadc 1
+add
+jump ite_end_0
+label ite_else_0
+loadc 777
+label ite_end_0

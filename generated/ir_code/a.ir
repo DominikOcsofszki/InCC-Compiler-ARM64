@@ -1,0 +1,9 @@
+loadc 2
+loadc 1
+le
+ite
+then
+loadc 111
+else
+loadc 333
+endif

@@ -1,0 +1,75 @@
+import re
+# PROGRAM=""
+_DATA = ""
+
+def arm_add_var_to_env(env,program):
+    _DATA += "helloworld: .ascii \"Hello World!!\\n\"\n"
+    return program
+
+def arm_add_all_Var(env,program):
+    program += ".data\n"
+    program += _DATA
+    return program
+
+
+
+def arm_read_var(env,program):
+    program += "    mov x0, #1\n"
+    program += "    adrp	x1, helloworld@PAGE\n"
+    program += "    add	x1,x1, helloworld@PAGEOFF\n"
+    program += "\n"
+    program += "    mov x2, #14\n"
+    program += "    mov x16, #4 ;SYS_write\n"
+    program += "    svc 0\n"
+
+    program = arm_exit(env,program)
+    return program
+
+
+# def x86_prefix(env):
+def arm_read_var(env,program):
+    program += "    mov x0, #1\n"
+    program += "    adrp	x1, helloworld@PAGE\n"
+    program += "    add	x1,x1, helloworld@PAGEOFF\n"
+    program += "\n"
+    program += "    mov x2, #14\n"
+    program += "    mov x16, #4 ;SYS_write\n"
+    program += "    svc 0\n"
+
+    program = arm_exit(env,program)
+    program += ".data\n"
+    program += "helloworld: .ascii \"Hello World!!\\n\"\n"
+    return program
+
+
+
+# def x86_prefix(env):
+#     program  = "extern  printf\n"    
+#     program += "SECTION .data               ; Data section, initialized variables\n"
+#     program += 'i64_fmt:  db  "%lld", 10, 0 ; printf format for printing an int64\n'
+#     return program
+
+# def x86_start(env):
+#     program  = "\n"
+#     program += "SECTION  .text\nglobal main\n"
+#     program += "main:\n"
+#     program += "  push  rbp                 ; unnötig, weil es den Wert 1 enthält, trotzem notwendig, weil sonst segfault\n"              
+#     program += "  mov   rax,rsp             ; rsp zeigt auf den geretteten rbp  \n"          
+#     program += "  sub   rax,qword 8         ; neuer rbp sollte ein wort darüber liegen\n"      
+#     program += "  mov   rbp,rax             ; set frame pointer to current (empty) stack pointer\n"          
+#     return program
+
+# def x86_final(env):
+#     program  = "  pop   rax\n"
+#     program += "  mov   rsi, rax\n"
+#     program += "  mov   rdi,i64_fmt         ; arguments in rdi, rsi\n"
+#     program += "  mov   rax,0               ; no xmm registers used\n"
+#     program += "  push  rbp                 ; set up stack frame, must be alligned\n"
+#     program += "  call  printf              ; Call C function\n"
+#     program += "  pop   rbp                 ; restore stack\n"
+#     program += "\n;;; Rueckkehr zum aufrufenden Kontext\n"
+#     program += "  pop   rbp                 ; original rbp ist last thing on the stack\n"
+#     program += "  mov   rax,0               ; return 0\n"
+#     program += "  ret\n"
+#     return program
+#

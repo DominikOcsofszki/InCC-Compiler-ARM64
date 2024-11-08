@@ -1,0 +1,6 @@
+loadc 123
+loadc 0
+store
+pop
+loadc 0
+load

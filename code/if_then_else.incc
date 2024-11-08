@@ -1,0 +1,10 @@
+{
+#print_stack_5;
+ a = 111;
+ b = 222;
+#print_stack_5;
+ if a>b then {333 + 1} else 777
+ #print_stack_5
+
+#if a>b then {333 + 1} 
+}

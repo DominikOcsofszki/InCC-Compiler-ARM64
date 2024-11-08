@@ -1,0 +1,17 @@
+loadc 123
+loadc 16
+store
+pop
+loadc 234
+loadc 32
+store
+pop
+loadc 345
+loadc 48
+store
+pop
+loadc 456
+loadc 48
+store
+pop
+loada 48

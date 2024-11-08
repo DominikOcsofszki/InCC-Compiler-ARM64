@@ -1,0 +1,21 @@
+jump endproc_0
+label proc_0
+enter
+alloc 1
+loadc 1929
+loadrc -32
+store
+pop
+return
+label endproc_0
+load_addr_label proc_0
+loadc 16
+store
+pop
+loadc 1
+mark
+loadc 16
+load
+call
+pop
+slide 0 1

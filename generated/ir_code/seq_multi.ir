@@ -1,0 +1,13 @@
+loadc 2
+loadc 16
+store
+pop
+loada 16
+loadc 500
+mul
+loadc 32
+store
+pop
+loada 16
+pop
+loada 32

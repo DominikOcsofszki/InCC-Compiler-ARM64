@@ -1,0 +1,19 @@
+loadc 11
+loadc 16
+store
+pop
+loadc 22
+loadc 32
+store
+pop
+loadc 33
+loadc 48
+store
+pop
+loadc 44
+loadc 64
+store
+pop
+loadc 55
+loadc 80
+store
