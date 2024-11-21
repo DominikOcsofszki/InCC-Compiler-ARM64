@@ -1,0 +1,26 @@
+
+RBX Sonderrolle bei MaMa/IMa GP (bei CMa stackbase?)
+RSP stack pointer
+RBP frame pointer
+===================
+rbx = bottom-stack-base
+
+rbp = FP
+
+rsp=SP
+|		| 
+|5	| <- rsp (SP) (SP auf das oberste!!!) |Stackframe
+|4	| local    [+kp]											|Stackframe
+|3	| <- rbp (FP)													|Stackframe
+|2	| [-j]																|Stackframe
+|1	|							
+|0	| <- rbx (X20)
+
+  
+	lea in arm not existent
+
+	lea -> rip(PC) + (l-A)
+	l
+
+
+lambda benötigtt keinen parent evn

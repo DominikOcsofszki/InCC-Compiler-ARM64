@@ -27,9 +27,7 @@ sub x7, x20, fp;						enter
 mov fp, x7;						enter
 	ldr x0, [sp], #16; ;				pop
 	stp x0, x0, [SP, #-16]!;				push
-;len_local_vars
-	stp x0, x0, [SP, #-16]!;				push
-	mov x0, #1929
+	mov x0, #1234
 	stp x0, x0, [SP, #-16]!;				push
 ;>>>>>>>>>>>LOADRC=================
 	mov x0, -32
@@ -51,7 +49,7 @@ ret
 endproc_0:
 adr x0, proc_0
 	stp x0, x0, [SP, #-16]!;				push
-	mov x0, #16
+	mov x0, #0
 	stp x0, x0, [SP, #-16]!;				push
 ;>>>>>>>>>>>STORE===========
 	ldr x1, [sp], #16;						pop
@@ -62,11 +60,9 @@ adr x0, proc_0
 	stp x0, x0, [SP, #-16]!;				push
 ;===========STORE<<<<<<<<<<<
 	ldr x0, [sp], #16; ;				pop
-	mov x0, #1
-	stp x0, x0, [SP, #-16]!;				push
 	mov x0, FP; IR:mark
 	stp x0, x0, [SP, #-16]!;				push
-	mov x0, #16
+	mov x0, #0
 	stp x0, x0, [SP, #-16]!;				push
 ;>>>>>>>>>>>LOAD============
 	ldr x0, [sp], #16; ;				pop
@@ -79,15 +75,12 @@ adr x0, proc_0
 blr x0; adds old addr of sp on stack?!?
 	ldr x0, [sp], #16; ;				pop
 	ldr x0, [sp], #16; ;				pop
-add sp, sp, 16
+add sp, sp, 32
 	stp x0, x0, [SP, #-16]!;				push
 ;==============================
 ;========STACK_MACHINE=========
 ;==============================
 
-	adrp x0, StackItems@PAGE
-	add x0, x0, StackItems@PAGEOFF
-	bl _printf
 	adrp x0, FinalResult@PAGE
 	add x0, x0, FinalResult@PAGEOFF
 	bl _printf
@@ -104,57 +97,29 @@ add sp, sp, 16
 .data
 FinalResult: .asciz "FinalResult: %d \n"
 HelperResult: .asciz "HelperResult: %d \n"
-StackItems: .asciz "StackItems: 
-0:	 %d  %d
-1:	 %d  %d
-2:	 %d  %d
-3:	 %d  %d
-4:	 %d  %d
-5:	 %d  %d
-6:	 %d  %d
-7:	 %d  %d
-8:	 %d  %d
-9:	 %d  %d
-10:	 %d  %d
-11:	 %d  %d
-12:	 %d  %d
-13:	 %d  %d
-14:	 %d  %d
-15:	 %d  %d
-16:	 %d  %d
-17:	 %d  %d
-18:	 %d  %d
-19:	 %d  %d \n"
-StackItems_5: .asciz "StackItems_5: 
-0:	 %d  %d
-1:	 %d  %d
-2:	 %d  %d
-3:	 %d  %d
-4:	 %d  %d \n"
 .data
 IR: .asciz "
 =========IR-CODE===========
 jump endproc_0
 label proc_0
 enter
-alloc 1
-loadc 1929
+alloc 0
+loadc 1234
 loadrc -32
 store
 pop
 return
 label endproc_0
 load_addr_label proc_0
-loadc 16
+loadc 0
 store
 pop
-loadc 1
 mark
-loadc 16
+loadc 0
 load
 call
 pop
-slide 0 1
+slide -1 1
 =========IR-CODE===========
 "
-;inside STACK_MACHINE: push(+)/pop(-) count = 0
+;inside STACK_MACHINE: push(+)/pop(-) count = -3

@@ -22,7 +22,7 @@ PRINT_GENERATED_AST = True
 PRINT_FILE_DATA = True
 
 
-def print_final_env(env:SK):
+def print_final_env(env: SK):
     print("final env: ")
     env.print_all()
     # print(env)
@@ -67,16 +67,19 @@ def compileFileFromCodeFolderBaseName(fname, env):
         print_ast(ast)
 
     compiler_ast(ast, env)
+
+
 def execute_make_for_file_name(fname):
     import subprocess
-    cmd = ["make", 
-           "-C", f"{Configs.GENERATED_DIR.value}", 
-           "-f", "~/.config/asm_Makefile",  
+    cmd = ["make",
+           "-C", f"{Configs.GENERATED_DIR.value}",
+           "-f", "~/.config/asm_Makefile",
            f"FILE_PATH={Configs.GENERATED_DIR.value}/{fname}"]
     run = subprocess.run(cmd, capture_output=True)
     print(f"RUN PROGRAM for file: {fname}")
     print(run.stderr.decode())
     print(run.stdout.decode())
+
 
 def run():
     # FILE_NAME = "seq_multi"

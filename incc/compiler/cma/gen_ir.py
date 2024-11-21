@@ -1,9 +1,9 @@
+from .enum_ast import Ast
+from .arm64_helper import l, t
 from configs import SK, Configs
 from icecream import ic
 
 GLOBAL_AS_STACK_SIZE = 0
-from .arm64_helper import l, t
-from .enum_ast import Ast
 
 COUNT_LABELS = 0
 STACK_SIZE_ARM = Configs.STACK_SIZE_ARM.value
@@ -16,6 +16,7 @@ def unique_labels(*labels):
         results.append(label + "_" + str(COUNT_LABELS))
     COUNT_LABELS = COUNT_LABELS + 1
     return results
+
 
 def new_global__addr():
     global GLOBAL_AS_STACK_SIZE
@@ -30,14 +31,11 @@ def new_global__addr():
 #     return "" + str(ret)
 
 
-
-
-
-
 def setup_local_vars(local_vars, env: SK):
     local_var_addr = STACK_SIZE_ARM  # ARM64/MAC always uses 16 for stack
     for local_var_name in local_vars:
-        info = {"addr": local_var_addr, "scope": "local", "size": 8, "POS": [0]}
+        info = {"addr": local_var_addr,
+                "scope": "local", "size": 8, "POS": [0]}
         env.set_local_var(local_var_name, info)
         local_var_addr += STACK_SIZE_ARM
 
@@ -45,12 +43,13 @@ def setup_local_vars(local_vars, env: SK):
 def setup_local_args(local_args, env):
     local_arg_addr = -STACK_SIZE_ARM * 2  # ARM64/MAC always uses 16 for stack
     for local_arg_name in local_args:
-        info = {"addr": local_arg_addr, "scope": "local", "size": 8, "POS": [0]}
+        info = {"addr": local_arg_addr,
+                "scope": "local", "size": 8, "POS": [0]}
         env.set_local_var(local_arg_name, info)
         local_arg_addr -= STACK_SIZE_ARM
 
 
-def code_r(node, env:SK):
+def code_r(node, env: SK):
     ret = ""
     match node:
         case (Ast.PROC_CALL.value, (addr_id), (args)):
@@ -59,42 +58,43 @@ def code_r(node, env:SK):
             ret += l("mark")
             ret += code_l(("variable", addr_id), env)
             ret += l("load")
-            ret += l("call")# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<-----------------call jumpto label
+            # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<-----------------call jumpto label
+            ret += l("call")
             ret += l("pop")
             ret += l(f"slide {len(args)-1} 1")
 
         case (Ast.PROC.value, args, local_vars, body):
             proc_label, end_proc_label = unique_labels("proc", "endproc")
             ret += l(f"jump {end_proc_label}")
-            ret += l(f"label {proc_label}")# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<---call jumpto here
+            # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<---call jumpto here
+            ret += l(f"label {proc_label}")
             ret += l("enter")
-            ##TODO: here we add item for the callee
-            ## CALEE_ENTER>>>
+            # TODO: here we add item for the callee
+            # CALEE_ENTER>>>
             setup_local_vars(local_vars, env)
             setup_local_args(args, env)
-            #TODO: use this in future, calc here, instead of ir_to_arm
-            #ret += l(f"alloc {len(local_vars)*STACK_SIZE_ARM}")
+            # TODO: use this in future, calc here, instead of ir_to_arm
+            # ret += l(f"alloc {len(local_vars)*STACK_SIZE_ARM}")
             ret += l(f"alloc {len(local_vars)}")
-            ## CALEE_ENTER<<<
+            # CALEE_ENTER<<<
             ret += code_r(body, env)
-            ## CALEE_EXIT>>>
+            # CALEE_EXIT>>>
             ret += l(f"loadrc {-2*STACK_SIZE_ARM}")
             ret += l(f"store")
             ret += l(f"pop")
-            
-            ## CALEE_EXIT<<<
+
+            # CALEE_EXIT<<<
             ret += l("return")
             ret += l(f"label {end_proc_label}")
-            print(proc_label)
+            # print(proc_label)
             # ret += l("loadc {proc_label}"),
             ret += l(f"load_addr_label {proc_label}")
-
 
             env.reset_locals()
             env.print_all()
 
-        ## USE IDs as functiosn => hack for now, remove later!
-        case ( Ast.ID, Ast.PRINT_STACK_5.value,):  
+        # USE IDs as functiosn => hack for now, remove later!
+        case (Ast.ID, Ast.PRINT_STACK_5.value,):
             ret += l("print_stack_5")
 
         case (Ast.WHILE.value, cond, body):
@@ -105,9 +105,14 @@ def code_r(node, env:SK):
             ret += code_r(body, env)
             ret += l(f"jump {while_start}")
             ret += l(f"label {while_end}")
+            # print(cond)
+            # print(body)
+            # print(ret)
+            # exit()
 
         case (Ast.IF_THEN_ELSE.value, cond, body, else_body):
-            ite, ite_else, ite_end = unique_labels("ite", "ite_else", "ite_end")
+            ite, ite_else, ite_end = unique_labels(
+                "ite", "ite_else", "ite_end")
             ret += l(f"label {ite}")
             ret += code_r(cond, env)
             ret += l(f"jumpz {ite_else}")
@@ -137,7 +142,7 @@ def code_r(node, env:SK):
 
         # case ("load", var_name):
         case (Ast.ID.value, var_name):
-            ret += code_l(('variable', var_name),env)
+            ret += code_l(('variable', var_name), env)
             ret += l('load')
 
         case (Ast.SEQUENCE.value, (seq)):
@@ -178,18 +183,19 @@ def code_r(node, env:SK):
         case _:
             raise Exception(
                 l(
-                    f"code_r uninplemented for node:  {node} <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+                    f"code_r uninplemented for node:  {
+                        node} <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
                 )
             )
-
 
     return ret + "\n" if ret[-1] != "\n" else ret
 
 
-def code(node, env:SK):
+def code(node, env: SK):
     return code_r(node, env) + "pop" + "\n"
 
-def code_l(node, env:SK):
+
+def code_l(node, env: SK):
     ret = ""
     match node:
         case ("variable", var_name):
@@ -203,4 +209,3 @@ def code_l(node, env:SK):
         case _:
             raise Exception(f"code_l uninplemented, node: {node}")
     return ret + "\n" if ret[-1] != "\n" else ret
-

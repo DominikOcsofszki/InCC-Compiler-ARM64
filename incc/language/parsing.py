@@ -9,17 +9,28 @@ def createParser():
     return PARSER_FINAL
 
 def p_proc_call(p):
-    '''expression : ID LPAREN expression_list RPAREN'''
-    if len(p) == 5:
+    '''expression : ID LPAREN expression_list RPAREN
+                   | ID LPAREN RPAREN'''
+    if len(p) == 4:
+        p[0] = (Ast.PROC_CALL.value, (p[1]), ([]))
+    elif len(p) == 5:
         p[0] = (Ast.PROC_CALL.value, (p[1]), (p[3]))
     else:
         raise RuntimeError(f" ERROR in proc {p}")
 def p_proc(p):
-    '''expression : PROC LPAREN id_list RPAREN id_list RIGHT_ARROW expression'''
-    if len(p) == 8:
+    '''expression : PROC LPAREN id_list RPAREN id_list RIGHT_ARROW expression
+                  | PROC LPAREN  RPAREN id_list RIGHT_ARROW expression
+                  | PROC LPAREN  RPAREN  RIGHT_ARROW expression
+                  '''
+    if len(p) == 6:
+        p[0] = (Ast.PROC.value, ([]), ([]), (p[5]))
+    elif len(p) == 7:
+        p[0] = (Ast.PROC.value, ([]), (p[4]), (p[6]))
+        # p[0] = (Ast.PROC.value, (p[3???]), ([]), (p[6]))
+    elif len(p) == 8:
         p[0] = (Ast.PROC.value, (p[3]), (p[5]), (p[7]))
     else:
-        raise RuntimeError(f" ERROR in proc {p}")
+        raise RuntimeError(f" >>>>ERROR in proc {p[0]}")
 def p_id_list(p) :
     '''id_list :  ID
                 | ID COMMA id_list'''

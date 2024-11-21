@@ -2,21 +2,53 @@
 
 import re
 from configs import SK, Configs
+
 DATA_PRINT_1 = "FinalResult"
 DATA_PRINT_2 = "HelperResult"
 DATA_STACKITEMS = "StackItems"
 DATA_STACKITEMS_5 = "StackItems_5"
 DATA_PRINT_IR = "IR"
 
+COUNTER_PUSH_POP = 0
+save_stack_count_on_x5 = True
+
+
+def GET_COUNTER():
+    global COUNTER_PUSH_POP
+    return COUNTER_PUSH_POP
+
+
+def PUSH_COUNT():
+    code = ''
+    if save_stack_count_on_x5:
+        code = l(f'')
+    global COUNTER_PUSH_POP
+    COUNTER_PUSH_POP += 1
+    return code
+
+
+def POP_COUNT():
+    code = ''
+    global COUNTER_PUSH_POP
+    COUNTER_PUSH_POP -= 1
+    return code
+
+
 def l(line):
     return f'{line}\n'
+
+
 def t(line):
     return f'\t{line}\n'
 
-def nr_global_vars(env:SK):
+
+def nr_global_vars(env: SK):
     return env.nr_global_vars()
+
+
 def total_size(nr_of_vars):
     return nr_of_vars * Configs.STACK_SIZE_ARM.value
+
 
 def sanity_checks(env):
     program = ''
@@ -44,14 +76,14 @@ def arm64_prefix(env):
     program += arm64_proloque_(env)
     return program
 
+# def print_stack_item(env):
+#     program = ""
+#     program += t(f"adrp x0, {DATA_PRINT_1}@PAGE")
+#     program += t(f"add x0, x0, {DATA_PRINT_1}@PAGEOFF")
+#     program += t("bl _printf")
+#     program += t(f"add sp, sp, 0x10; move pointer back to top stack item + print removes it")
+#     return program
 
-def print_stack_item(env):
-    program = ""
-    program += t(f"adrp x0, {DATA_PRINT_1}@PAGE")
-    program += t(f"add x0, x0, {DATA_PRINT_1}@PAGEOFF")
-    program += t("bl _printf")
-    program += t(f"add sp, sp, 0x10; move pointer back to top stack item + print removes it")
-    return program
 
 def print_last_item_on_stack(env):
     program = ""
@@ -61,6 +93,7 @@ def print_last_item_on_stack(env):
     # program += t(f"add sp, sp, 0x10; Remvoe Last Stack Item")
     program += print_ir_if_configs(env)
     return program
+
 
 def print_ir_if_configs(env):
     SHOW_IR_IN_ASM = Configs.SHOW_IR_IN_ASM.value
@@ -74,8 +107,8 @@ def print_ir_if_configs(env):
 
 def arm64_final(env):
     program = "\n"
-    if True:
-        program += print_all_stack_items(env)
+    # if True:
+    #     program += print_all_stack_items(env)
     program += print_last_item_on_stack(env)
     program += arm64_epiloque(env)
 
@@ -84,58 +117,69 @@ def arm64_final(env):
     program += data_part(env)
     return program
 
+# def arm64_proloque_(env):
+#     total_size_global_stack  = total_size(nr_global_vars(env))
+#     program = l(t("stp FP, LR, [sp, -0x10]!;epilogue"))
+#     program += t("mov x20, sp; x20 as BottomStackPointer")
+#     program += t("sub x20,x20, 0x10; x20 as BottomStackPointer") #TODO:!!!!
+#     program += t(f"sub sp, sp, #{total_size_global_stack}; x20 as BottomStackPointer")
+#     # print_all_stack_items(env)
+#     return program
 
 
 def arm64_proloque_(env):
-    total_size_global_stack  = total_size(nr_global_vars(env))
+    total_size_global_stack = total_size(nr_global_vars(env))
     program = t("mov x20, sp; x20 as BottomStackPointer")
     program += t(f"sub sp, sp, #{total_size_global_stack}; x20 as BottomStackPointer")
     program += l(t("stp FP, LR, [sp, -0x10]!;epilogue"))
     # print_all_stack_items(env)
     return program
 
+
 def arm64_epiloque(env):
-    total_size_global_stack  = total_size(nr_global_vars(env))
+    total_size_global_stack = total_size(nr_global_vars(env))
     program = l("")
-    program += t("ldr x0, [SP], #16; remove last item from STACK; is this CORRECT???")
+    program += t("ldr x0, [SP], #16; ; seems correct: Remove last item from Stack!!! for printing ")
     program += l(t("ldp FP, LR, [sp], 0x10;arm64_epiloque:"))
     # program += t(";===Local Vars, remove!")
     # program += t("mov sp, x20; prologue: restore sp from x20")
     program += t(f"add sp, sp, #{total_size_global_stack}; x20 as BottomStackPointer")
     return program
 
+
 def add_x_stack_item(size):
     size_env = size
-    p_d=""
+    p_d = ""
     for i in range(size_env):
         p_d += f"\n{i}:\t %d  %d"
     return p_d
+
 
 def data_part(env):
     program = l(".data")
     program += l(f'{DATA_PRINT_1}: .asciz "{DATA_PRINT_1}: %d \\n"')
     program += l(f'{DATA_PRINT_2}: .asciz "{DATA_PRINT_2}: %d \\n"')
-    program += l(f'{DATA_STACKITEMS}: .asciz "{DATA_STACKITEMS}: {add_x_stack_item(20)} \\n"')
-    program += l(f'{DATA_STACKITEMS_5}: .asciz "{DATA_STACKITEMS_5}: {add_x_stack_item(5)} \\n"')
+    # program += l(f'{DATA_STACKITEMS}: .asciz "{DATA_STACKITEMS}: {add_x_stack_item(20)} \\n"')
+    # program += l(f'{DATA_STACKITEMS_5}: .asciz "{DATA_STACKITEMS_5}: {add_x_stack_item(5)} \\n"')
     return program
 
 
-def print_all_stack_items(env, s = 20):
-    # size_env = len(env)
-    size_env = s
-    p_d=""
-    for i in range(size_env):
-        p_d += f"\n{i}:\t %d  %d"
-    program = ""
-    program += t(f"adrp x0, {DATA_STACKITEMS}@PAGE")
-    program += t(f"add x0, x0, {DATA_STACKITEMS}@PAGEOFF")
-    program += t("bl _printf")
-    #program += l(".data")
-    #program += l(f'{DATA_STACKITEMS}: .asciz "{DATA_STACKITEMS}: {p_d} \\n"')
-    # program += l(".text ")
-    # program += t(f"add sp, sp, 0x10; move pointer back to top stack item + print removes it")
-    return program
-
+# def print_all_stack_items(env, s = 20):
+#     # size_env = len(env)
+#     size_env = s
+#     p_d=""
+#     for i in range(size_env):
+#         p_d += f"\n{i}:\t %d  %d"
+#     program = ""
+#     program += t(f"adrp x0, {DATA_STACKITEMS}@PAGE")
+#     program += t(f"add x0, x0, {DATA_STACKITEMS}@PAGEOFF")
+#     program += t("bl _printf")
+#     #program += l(".data")
+#     #program += l(f'{DATA_STACKITEMS}: .asciz "{DATA_STACKITEMS}: {p_d} \\n"')
+#     # program += l(".text ")
+#     # program += t(f"add sp, sp, 0x10; move pointer back to top stack item + print removes it")
+#     return program
+#
 # def print_all_stack_items(env):
 #     s_env = len(env)
 #     program = ""
@@ -149,10 +193,3 @@ def print_all_stack_items(env, s = 20):
 #     return program
 #     # print(program)
 #     # exit()
-
-
-
-            
-
-        
-

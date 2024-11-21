@@ -47,9 +47,6 @@ main:
 ;========STACK_MACHINE=========
 ;==============================
 
-	adrp x0, StackItems@PAGE
-	add x0, x0, StackItems@PAGEOFF
-	bl _printf
 	adrp x0, FinalResult@PAGE
 	add x0, x0, FinalResult@PAGEOFF
 	bl _printf
@@ -66,33 +63,6 @@ main:
 .data
 FinalResult: .asciz "FinalResult: %d \n"
 HelperResult: .asciz "HelperResult: %d \n"
-StackItems: .asciz "StackItems: 
-0:	 %d  %d
-1:	 %d  %d
-2:	 %d  %d
-3:	 %d  %d
-4:	 %d  %d
-5:	 %d  %d
-6:	 %d  %d
-7:	 %d  %d
-8:	 %d  %d
-9:	 %d  %d
-10:	 %d  %d
-11:	 %d  %d
-12:	 %d  %d
-13:	 %d  %d
-14:	 %d  %d
-15:	 %d  %d
-16:	 %d  %d
-17:	 %d  %d
-18:	 %d  %d
-19:	 %d  %d \n"
-StackItems_5: .asciz "StackItems_5: 
-0:	 %d  %d
-1:	 %d  %d
-2:	 %d  %d
-3:	 %d  %d
-4:	 %d  %d \n"
 .data
 IR: .asciz "
 =========IR-CODE===========
